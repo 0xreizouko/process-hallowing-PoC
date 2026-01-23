@@ -100,14 +100,37 @@ int main() {
       } while(Process32Next(hSnapshot, &currentProcess));
 
       // OpenProcess to obtain a handle for NTCreateProcessEx
-      HANDLE hProcess = OpenProcess(
-        PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+      HANDLE hParentProcess = OpenProcess(
+        MAXIMUM_ALLOWED,
         FALSE,                                     
         currentProcess.th32ProcessID                                  
     );
+
+      WCHAR cmdLine[MAX_PATH];
+      DWORD size = MAX_PATH;
+      QueryFullProcessImageNameW(hParentProcess, 0, cmdLine, &size);
+      printf("[*] Obtained full path %S:\n", cmdLine);
+ 
+
+    if(hParentProcess != NULL && hParentProcess != INVALID_HANDLE_VALUE) printf("[+] Obtained parent process \n");
+     
+     // Let's try the basic method of PPID
+      STARTUPINFOEXW si = {};
+      PROCESS_INFORMATION pi = {};
+      SIZE_T attributeSize;
+      ZeroMemory(&si, sizeof(STARTUPINFOEXW));
+
+      InitializeProcThreadAttributeList(NULL, 1, 0, &attributeSize);
+      si.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), 0, attributeSize);
+
+      InitializeProcThreadAttributeList(si.lpAttributeList, 1, 0, &attributeSize);
+      UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &hParentProcess, sizeof(HANDLE), NULL, NULL);
+      si.StartupInfo.cb = sizeof(si);
       
+      CreateProcessW(NULL, cmdLine, NULL, NULL, FALSE, EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED, NULL, NULL, &si.StartupInfo, &pi);
+      printf("[+] Child process created successfully: %8d\n", pi.dwProcessId); 
       // HANDLE hInjectedProcess = NtCreateProcessEx();
-      test_phnt();
+      // test_phnt();
 
       // Loading the resource
       HRSRC hResource = FindResourceW(NULL, L"MAIN", L"CONFIG");
