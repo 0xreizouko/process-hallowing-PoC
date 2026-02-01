@@ -53,3 +53,9 @@ cmake --build build --config Release --target <project_name>
 You can always omit `project_name` to build all projects.
 
 To run the project you will find the final exe at `build/<project_name>/<config>/` (e.g: `build/getVersion/Release`). 
+
+
+# References
+
+- [Protensec - Calling ntdll functions directly](https://www.proteansec.com/reverse-engineering/calling-ntdll-functions-directly/)
+- [Concealed Code Execution](https://www.huntandhackett.com/blog/concealed-code-execution-techniques-and-detection)

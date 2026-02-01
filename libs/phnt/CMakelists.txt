@@ -1,0 +1,17 @@
+add_library(phnt INTERFACE)
+
+target_include_directories(phnt INTERFACE 
+    ${CMAKE_CURRENT_LIST_DIR}
+)
+
+
+target_compile_definitions(phnt INTERFACE 
+    PHNT_VERSION=PHNT_WIN11
+    PHNT_NO_INLINE_INIT_STRING
+)
+
+target_link_libraries(phnt INTERFACE 
+    ntdll.lib 
+)
+
+add_library(phnt::phnt ALIAS phnt)
